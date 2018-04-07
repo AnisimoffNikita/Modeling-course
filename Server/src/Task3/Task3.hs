@@ -32,19 +32,6 @@ data InternalParams = InternalParams {
   , getParams :: Parameters
 }
 
-params = Parameters{
-    getTheta = 293,
-    getLambda0 = 0.1,
-    getR = 0.5,
-    getF0 = -10,
-    getL = 10,
-    getAlpha0 = 0.01,
-    getAlphaN = 0.005,
-    getToc = 293,
-    getH = 0.001,
-    getPower = 2
-}
-
 chi :: Double -> Double -> Double
 chi l1 l2 = 2*l1*l2 / (l1 + l2)
 
@@ -67,7 +54,7 @@ f :: Double -> Double -> Double -> Double -> Double -> Double
 f toc a b r x = (-2.0*toc/r) * alpha a b x
 
 converge :: [Double] -> [Double] -> Bool
-converge last current = traceShow (maximum (zipWith (\a b -> abs ((a - b) / a)) last current)) $ maximum (zipWith (\a b -> abs ((a - b) / a)) last current) < 0.5
+converge last current = maximum (zipWith (\a b -> abs ((a - b) / a)) last current) < 0.1
 
 chiList :: [Double] -> [Double]
 chiList (l1:rest@(l2:lambdas)) = chi l1 l2 : chiList rest
@@ -125,7 +112,7 @@ getCoeffs x t = do
     c = c0 : tail chi
     d = d0 : map (\x -> f x * h * h) (tail . init $ x) ++ [dn]
 
-  traceShow (length a) $ traceShow (length b) $ traceShow (length c) $ traceShow (length d) $ return (a, b, c, d)
+  return (a, b, c, d)
 
 solve :: [Double] -> [Double] -> Int -> Reader InternalParams [(Double, Double)]
 solve x t i = do
@@ -134,9 +121,11 @@ solve x t i = do
   let
     newt = tridiagonalSolve a c b d
 
-  traceShow newt $ if converge t newt
-     then return $ zip x newt
-     else solve x newt (i + 1)
+  traceShow newt $ if i == 100
+    then return [(0,0)]
+    else if converge t newt
+      then return $ zip x newt
+      else solve x newt (i + 1)
 
 tableResult :: Reader Parameters [(Double, Double)]
 tableResult = do

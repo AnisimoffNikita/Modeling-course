@@ -50,10 +50,11 @@ p params i = res
 
     left = p0' * 7242 / tn'
 
-    t' = t i r'
     r' = radius params
 
     f p z = z * interpolate2d table1 (t' z) p
+
+    t' = t i r'
 
     g p = (2/(r'*r')) * integrate 20 (f p) 0 r' - left
 
@@ -62,17 +63,17 @@ p params i = res
 rp :: Parameters -> Double -> Double
 rp params i = res
   where
-    r' = radius params
-    l' = l params
-    p' = p params i
+    r' = radius params  --берешь радиус из заданных параметров
+    l' = l params --берешь длину из заданных параметров
+    p' = p params i --находишь р, зная ток
 
-    integral = integrate 20 f 0 r'
-    f z = z*interpolate2d table2 (t' z) p'
 
-    t' = t i r'
+    t' = t i r' --это нижняя функция, которая позволяет получить температуру
+    f z = z*interpolate2d table2 (t' z) p' -- это подинтегральное выражение которое в знаменателе
+    integral = integrate 20 f 0 r' --тут ты его вычисляешь, 20 это число шагов, 0 и r' пределы интегрирования
 
-    t0 = interpolateT0 (abs i)
-    res = trace (show t0 ++ "\t" ++ show p' ++ "\t" ++ show i) $ l' / (2*pi*integral)
+    t0 = interpolateT0 (abs i) --получаешь температуру из 3 таблицы
+    res = l' / (2*pi*integral) -- ну а тут уже тупо вычисление самого rp
 
 current :: Parameters -> Double -> Double -> Double -> Double
 current params u _ i = (u - (rk params + rp params i) * i) / lk params

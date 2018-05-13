@@ -17,6 +17,26 @@ executable Server
   hs-source-dirs:      src
   main-is:             Main.hs
   default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5, scotty, text, http-types, containers, boxes, aeson, bytestring, vector, mtl, diagrams-solve
-  other-modules:       Formatter, Task1.Task1, Task2.Task2, Task2.Data, Task2.Math, Task3.Task3, Task3.Math
+  build-depends:       base >= 4.7 && < 5
+                     , scotty
+                     , text
+                     , http-types
+                     , containers
+                     , boxes
+                     , aeson
+                     , bytestring
+                     , vector
+                     , mtl
+                     , diagrams-solve
+                     , matrix
+  other-modules:       Formatter
+                     , Task1.Task1
+                     , Task2.Task2
+                     , Task2.Data
+                     , Task2.Math
+                     , Task3.Task3
+                     , Task3.Math
+                     , Task4.Task
+                     , Task4.Collocation
+                     , Task4.Basic
   ghc-options:         -O2
